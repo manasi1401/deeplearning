@@ -7,3 +7,5 @@ Sources:
 https://www.tensorflow.org/tutorials/layers
 //Datasets online
 http://yann.lecun.com/exdb/mnist/
+
+http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6296535
