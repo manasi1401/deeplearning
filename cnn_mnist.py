@@ -1,3 +1,4 @@
+# This is MNIST cnn model as described on Tensor flow tutorials with estimators
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -98,7 +99,7 @@ def main(unused_argv):
 
     mnist_classifier.train(
         input_fn=train_input_fn,
-        steps=2000,
+        steps=20000,
         hooks =[logging_hook])
 
     #evalulate the model and print results
