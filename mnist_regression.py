@@ -19,31 +19,36 @@ from __future__ import print_function
 
 import argparse
 import sys
+import matplotlib
+matplotlib.use('pdf')
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 
 from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 FLAGS= None
-
+VALIDATION_SIZE = 2000
 def main(_):
     mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot = True)
 
-    #X is just a plaveholder, a value that we have to enter when we run computations
+    #X is just a placeholder, a value that we have to enter when we run computations
     #The shape is [None, 784]
     x = tf.placeholder(tf.float32, [None, 784])
     #Weight - this is a modifiable tensor of shape [784, 10]. Initialised to zeros
     W = tf.Variable(tf.zeros([784, 10])) 
     #Bias - this is a modifiable tensor of shape [10]. Initialised to zeros
     b = tf.Variable(tf.zeros([10])) #bias
-
+    
+    
     #implementing our linear model: Y = XW + b
-    y = tf.matmul(x, W)+b
+    y = tf.nn.softmax(tf.matmul(x, W)+b)
 
     #A placeholder for the correct answers
     y_ = tf.placeholder(tf.float32, [None, 10])
     
     #implement cross entropy. Cross Entropy is the measure of how inefficient
     #our predictions are for describing the truth
-    cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
+    cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_, logits=y))
 
     #Doing backprop to minimize the cross entropy
     train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
@@ -53,19 +58,52 @@ def main(_):
 
     #initialise the variables
     tf.global_variables_initializer().run()
+    #visualization variables
+    train_accuracies =[]
+    validation_accuracies= []
+    x_range = []
 
-    #train for 1000 steps
+    display_step =1
+    #train for 20000 steps
     #For each step 100 random data points are chosen from training set
-    for _ in range(1000):
+    for i in range(2000):
         batch_xs, batch_ys = mnist.train.next_batch(100)
+        if i%display_step ==0 or (i+1) == 2000:
+            #prediction: check if our prediction matches with the truth
+            correct_prediction = tf.equal(tf.argmax(y,1) , tf.argmax(y_, 1))
+            
+            accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+            train_accuracy = accuracy.eval(feed_dict = {x:batch_xs,
+                                                        y_: batch_ys})
+            if(VALIDATION_SIZE):
+                validation_accuracy = accuracy.eval(feed_dict = {x: mnist.test.images[0:50],
+                                                                 y_: mnist.test.labels[0:50]})
+
+                print('training_accuracy /validation_accuracy => %.2f /%.2f for step %d' %(train_accuracy, validation_accuracy, i))
+                validation_accuracies.append(validation_accuracy)
+
+            else:
+                print('training_accuracy => %.4f for step %d' %(train_accuracy, i))
+            train_accuracies.append(train_accuracy)
+            x_range.append(i)
+
+            #increase display_step
+            if i%(display_step *10) ==0 and i:
+                display_step *=10
+
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-    #prediction: check if our prediction matches with the truth
-    correct_prediction = tf.equal(tf.argmax(y,1) , tf.argmax(y_, 1))
     
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-    print("accuracy: ")
-    print(sess.run(accuracy, feed_dict = {x: mnist.test.images, y_: mnist.test.labels}))
+
+    validation_accuracy = sess.run(accuracy, feed_dict = {x: mnist.test.images, y_: mnist.test.labels})
+    print('validation_accuracy => %.4f' %validation_accuracy)
+    plt.plot(x_range, train_accuracies, '-b', label ='Training')
+    plt.plot(x_range, validation_accuracies, '-g', label='Validation')
+    plt.legend(loc ='lower_right', frameon=False)
+    plt.ylim(ymax= 1.1, ymin =0.7)
+    plt.ylabel('accuracy')
+    plt.xlabel('step')
+    plt.savefig('regression.jpg')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

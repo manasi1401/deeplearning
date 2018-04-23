@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import print_function
 
 #imports
+
 #NumPy - fundamental package for array, functions, algebra, transforms
 import numpy as np
 #Open source machine learning framework used for this Nerual Network
@@ -25,7 +26,7 @@ import tensorflow as tf
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
-#Application logic goes below
+
 
 def cnn_model_fn(features, labels, mode):
     """Model function for CNN."""
@@ -58,7 +59,7 @@ def cnn_model_fn(features, labels, mode):
     #pooling layer #2
     pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2,2], strides=2)
     #There is again 50% reduction in dimensions of conv2. [batch_size, 7, 7, 64]
-
+    
     #dense layer 
 
     #reshape pool2 to 2d [batch_size, features]
@@ -89,7 +90,7 @@ def cnn_model_fn(features, labels, mode):
     onehot_labels = tf.one_hot(indices = tf.cast(labels, tf.int32), depth=10)
     #calculate loss 
     loss = tf.losses.softmax_cross_entropy(onehot_labels=onehot_labels, logits=logits)
-
+    
     #configure the training Op
     #Model to optimize the loss using the learning rate =0.001 and stochastic gradietn descent
     if mode == tf.estimator.ModeKeys.TRAIN:
@@ -98,7 +99,7 @@ def cnn_model_fn(features, labels, mode):
             loss =loss,
             global_step = tf.train.get_global_step())
         return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op = train_op)
-
+    
     eval_metric_ops={
         "accuracy": tf.metrics.accuracy(
             labels=labels, predictions= predictions["classes"])}
@@ -107,21 +108,16 @@ def cnn_model_fn(features, labels, mode):
 
 #Main function
 def main(unused_argv):
+
     #loading training and eval data
     mnist= tf.contrib.learn.datasets.load_dataset("mnist")
     train_data = mnist.train.images #retruns np.array
     train_labels = np.asarray(mnist.train.labels, dtype=np.int32)
     eval_data = mnist.test.images #returns np.array
     eval_labels = np.asarray(mnist.test.labels, dtype=np.int32)
-
+    
     mnist_classifier = tf.estimator.Estimator(
         model_fn=cnn_model_fn, model_dir="/tmp/mnist_convnet_model")
-
-    #set up logging for predictions
-    #tensors_to_log={"probabilities":"softmax_tensor"}
-    #logging_hook = tf.train.LoggingTensorHook(
-    #    tensors=tensors_to_log, every_n_iter=500)
-
 
     #TRAIN the model
     train_input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -134,7 +130,7 @@ def main(unused_argv):
     mnist_classifier.train(
         input_fn=train_input_fn,
         steps=20000)
-
+    
     #evalulate the model and print results
     eval_input_fn = tf.estimator.inputs.numpy_input_fn(
         x={"x": eval_data},
@@ -144,6 +140,6 @@ def main(unused_argv):
         
     eval_results = mnist_classifier.evaluate(input_fn= eval_input_fn)
     print(eval_results)
-
+   
 if __name__ == "__main__":
     tf.app.run()

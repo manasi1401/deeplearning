@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 
-
+import matplotlib
+matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
@@ -55,7 +56,7 @@ def display(img):
     one_image = img.reshape(image_width, image_height)
 
     plt.axis('off')
-    plt.imshow(one_image, cmap=cm.binary)
+    #plt.imshow(one_image, cmap=cm.binary)
 
 #output image
 #display(images[IMAGE_TO_DISPLAY])
@@ -257,4 +258,4 @@ if(VALIDATION_SIZE):
     plt.ylim(ymax= 1.1, ymin =0.7)
     plt.ylabel('accuracy')
     plt.xlabel('step')
-    plt.show()
+    plt.savefig('deepnn.jpg')
