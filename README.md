@@ -1,11 +1,8 @@
-# deeplearning
+The repo has two code file cnn_mnist.py and mnist_regression.py. The repo also has the MNIST dataset and the research paper. 
+To run the code:
+  Pull the repo and make sure you have tensorflow installed
+  command: python [name of the file]
 
-This is the class assignment for Advanced Algorithms for Robotics course, Spring '18 by Manasi Paste
+mnist_regression.py produces a graph called regression.jpg for accuracy rates over the training and testing data.
 
-Sources:
-//tensorflow tutorials from MNIST
-https://www.tensorflow.org/tutorials/layers
-//Datasets online
-http://yann.lecun.com/exdb/mnist/
-
-http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=6296535
+Deep_nn.py is an extra code file.
