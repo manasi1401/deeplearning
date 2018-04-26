@@ -12,22 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-
+#Imports
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
 import argparse
 import sys
+#matplotlib import to be able to plot graphs
 import matplotlib
 matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-
+#import mnist data set built in tensorflow
 from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
+
 FLAGS= None
 VALIDATION_SIZE = 2000
+#==============================================================================
+#The main function get the dataset and converts its labels to an array of size 10
+#using onehot. It implements the linear model. It calculates the cross entropy.
+#Backpropagation is used to minimize the cross entropy. It trains for 2000 steps
+# and produces a graph of accuracy rates vs number of steps.
+#==============================================================================
 def main(_):
     mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot = True)
 
@@ -72,7 +80,7 @@ def main(_):
         if i%display_step ==0 or (i+1) == 2000:
             ##prediction: check if our prediction matches with the truth
             correct_prediction = tf.equal(tf.argmax(y,1) , tf.argmax(y_, 1))
-            
+            #checking the accuracy of the prediction
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
             train_accuracy = accuracy.eval(feed_dict = {x:batch_xs,
                                                         y_: batch_ys})
@@ -94,8 +102,6 @@ def main(_):
 
         sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
-    
-
     validation_accuracy = sess.run(accuracy, feed_dict = {x: mnist.test.images, y_: mnist.test.labels})
 #========================Plotting============================================
     print('validation_accuracy => %.4f' %validation_accuracy)
@@ -106,7 +112,7 @@ def main(_):
     plt.ylabel('accuracy')
     plt.xlabel('step')
     plt.savefig('regression.jpg')
-
+#============================================================================
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', type=str, default ='../MNIST-data', help = 'Directory fro storing input datat')

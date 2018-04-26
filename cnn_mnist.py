@@ -25,8 +25,8 @@ import tensorflow as tf
 
 tf.logging.set_verbosity(tf.logging.INFO)
 
-
-##Contains the architecture of CNN model takes in the images, labels and works on
+#==============================================================================
+#Contains the architecture of CNN model takes in the images, labels and works on
 #the PREDICT or TRAIN mode. This function has 2 convolutional layers and 2 pooling layers
 #followed by a dense layer of 1024 neurons. Then logits function is used to classify
 #the inputs in to 10 classes. 
@@ -34,6 +34,7 @@ tf.logging.set_verbosity(tf.logging.INFO)
 #         labels - labels of the images 0-9
 #         mode - Predict or Train
 #   Return: Estimator Spec - contains predictions, loss, eval_metric ops etc.
+#===============================================================================
 def cnn_model_fn(features, labels, mode):
   
     ##input layer. For CCN 2-D image is expected to have a
@@ -112,7 +113,11 @@ def cnn_model_fn(features, labels, mode):
     return tf.estimator.EstimatorSpec(
         mode=mode, loss = loss, eval_metric_ops=eval_metric_ops)
 
-"""Main function"""
+#==============================================================================
+#The main function loads the training and evaluation data. It trains the data in 
+#the CNN model. It runs the validation dataset and printouts the evalutation to 
+#the screen. The data is trained on a batch size of 100 for 20000 steps. 
+#===============================================================================
 def main(unused_argv):
 #=====================loading training and eval data===========================
     mnist= tf.contrib.learn.datasets.load_dataset("mnist")
