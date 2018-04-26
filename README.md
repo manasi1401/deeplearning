@@ -1,4 +1,4 @@
-The repo has two code file cnn_mnist.py and mnist_regression.py. The repo also has the MNIST dataset and the research paper. 
+The repo has two code file cnn_mnist.py and mnist_regression.py. The repo also has the MNIST dataset and the research paper in their respective folders. 
 To run the code:
 1) Pull the repo and make sure you have tensorflow installed
 2) command: 
