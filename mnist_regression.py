@@ -31,45 +31,46 @@ VALIDATION_SIZE = 2000
 def main(_):
     mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot = True)
 
-    #X is just a placeholder, a value that we have to enter when we run computations
+    ##X is just a placeholder, a value that we have to enter when we run computations
     #The shape is [None, 784]
     x = tf.placeholder(tf.float32, [None, 784])
-    #Weight - this is a modifiable tensor of shape [784, 10]. Initialised to zeros
+    ##Weight - this is a modifiable tensor of shape [784, 10]. Initialised to zeros
     W = tf.Variable(tf.zeros([784, 10])) 
-    #Bias - this is a modifiable tensor of shape [10]. Initialised to zeros
+    ##Bias - this is a modifiable tensor of shape [10]. Initialised to zeros
     b = tf.Variable(tf.zeros([10])) #bias
     
     
-    #implementing our linear model: Y = XW + b
+    ##implementing our linear model: Y = XW + b
     y = tf.nn.softmax(tf.matmul(x, W)+b)
 
-    #A placeholder for the correct answers
+    ##A placeholder for the correct answers
     y_ = tf.placeholder(tf.float32, [None, 10])
     
-    #implement cross entropy. Cross Entropy is the measure of how inefficient
-    #our predictions are for describing the truth
+    ##implement cross entropy. Cross Entropy is the measure of how inefficient
+    ##our predictions are for describing the truth
     cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(labels=y_, logits=y))
 
-    #Doing backprop to minimize the cross entropy
+    ##Doing backprop to minimize the cross entropy
     train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
-    #Launch a model in an interactive session
+    ##Launch a model in an interactive session
     sess = tf.InteractiveSession()
 
-    #initialise the variables
+    ##initialise the variables
     tf.global_variables_initializer().run()
-    #visualization variables
+    
+    ##visualization variables
     train_accuracies =[]
     validation_accuracies= []
     x_range = []
 
     display_step =1
-    #train for 20000 steps
+    ##train for 20000 steps
     #For each step 100 random data points are chosen from training set
     for i in range(2000):
         batch_xs, batch_ys = mnist.train.next_batch(100)
         if i%display_step ==0 or (i+1) == 2000:
-            #prediction: check if our prediction matches with the truth
+            ##prediction: check if our prediction matches with the truth
             correct_prediction = tf.equal(tf.argmax(y,1) , tf.argmax(y_, 1))
             
             accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
@@ -80,14 +81,14 @@ def main(_):
                                                                  y_: mnist.test.labels[0:50]})
 
                 print('training_accuracy /validation_accuracy => %.2f /%.2f for step %d' %(train_accuracy, validation_accuracy, i))
-                validation_accuracies.append(validation_accuracy)
+                validation_accuracies.append(validation_accuracy) ##validation accuracies for plotting
 
             else:
                 print('training_accuracy => %.4f for step %d' %(train_accuracy, i))
             train_accuracies.append(train_accuracy)
-            x_range.append(i)
+            x_range.append(i) ## add i to the x range array for plotting later
 
-            #increase display_step
+            ##increase display_step
             if i%(display_step *10) ==0 and i:
                 display_step *=10
 
@@ -96,6 +97,7 @@ def main(_):
     
 
     validation_accuracy = sess.run(accuracy, feed_dict = {x: mnist.test.images, y_: mnist.test.labels})
+#========================Plotting============================================
     print('validation_accuracy => %.4f' %validation_accuracy)
     plt.plot(x_range, train_accuracies, '-b', label ='Training')
     plt.plot(x_range, validation_accuracies, '-g', label='Validation')
